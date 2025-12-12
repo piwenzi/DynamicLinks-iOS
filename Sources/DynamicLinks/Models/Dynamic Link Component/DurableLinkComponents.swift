@@ -3,8 +3,11 @@ import Foundation
 @objc
 public final class DynamicLinkComponents: NSObject, @unchecked Sendable {
 
-    private let link: URL
-    private let domain: String
+    /// 目标深度链接 URL
+    public let link: URL
+    
+    /// 短链接域名前缀
+    public let domainUriPrefix: String
 
     public var iOSParameters: DynamicLinkIOSParameters = DynamicLinkIOSParameters()
     public var androidParameters: DynamicLinkAndroidParameters?
@@ -36,7 +39,7 @@ public final class DynamicLinkComponents: NSObject, @unchecked Sendable {
             return nil
         }
 
-        self.domain = domainURIPrefix
+        self.domainUriPrefix = domainURIPrefix
         self.iOSParameters = iOSParameters
         self.androidParameters = androidParameters
         self.iTunesConnectParameters = iTunesConnectParameters
@@ -56,7 +59,7 @@ public final class DynamicLinkComponents: NSObject, @unchecked Sendable {
             return "\(encodedKey)=\(encodedValue)"
         }.joined(separator: "&")
 
-        return URL(string: "\(domain)/?\(queryString)")
+        return URL(string: "\(domainUriPrefix)/?\(queryString)")
     }
 
     private func buildQueryDict() -> [String: String] {
