@@ -4,24 +4,24 @@
 import PackageDescription
 
 let package = Package(
-    name: "OSDynamicLinks",
+    name: "DynamicLinks",
     platforms: [
       .iOS(.v13),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "OSDynamicLinks",
-            targets: ["OSDynamicLinks"]),
+            name: "DynamicLinks",
+            targets: ["DynamicLinks"]),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "OSDynamicLinks"),
+            name: "DynamicLinks"),
         .testTarget(
-            name: "OSDynamicLinksTests",
-            dependencies: ["OSDynamicLinks"]
+            name: "DynamicLinksTests",
+            dependencies: ["DynamicLinks"]
         ),
     ]
 )
