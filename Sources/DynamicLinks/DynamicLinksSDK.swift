@@ -175,11 +175,17 @@ extension DynamicLinksSDK {
         Task {
             do {
                 let dynamicLink = try await handleDynamicLink(incomingURL)
-                completion(dynamicLink, nil)
+                await MainActor.run {
+                    completion(dynamicLink, nil)
+                }
             } catch let error as DynamicLinksSDKError {
-                completion(nil, error.nsError)
+                await MainActor.run {
+                    completion(nil, error.nsError)
+                }
             } catch {
-                completion(nil, error as NSError)
+                await MainActor.run {
+                    completion(nil, error as NSError)
+                }
             }
         }
     }
@@ -224,11 +230,17 @@ extension DynamicLinksSDK {
         Task {
             do {
                 let dynamicLink = try await handlePasteboardDynamicLink()
-                completion(dynamicLink, nil)
+                await MainActor.run {
+                    completion(dynamicLink, nil)
+                }
             } catch let error as DynamicLinksSDKError {
-                completion(nil, error.nsError)
+                await MainActor.run {
+                    completion(nil, error.nsError)
+                }
             } catch {
-                completion(nil, error as NSError)
+                await MainActor.run {
+                    completion(nil, error as NSError)
+                }
             }
         }
     }
@@ -272,16 +284,22 @@ extension DynamicLinksSDK {
     @objc
     public func shorten(
         dynamicLink: DynamicLinkComponents,
-        completion: @escaping (DynamicLinkShortenResponse?, NSError?) -> Void
+        completion: @Sendable @escaping (DynamicLinkShortenResponse?, NSError?) -> Void
     ) {
         Task {
             do {
                 let response = try await shorten(dynamicLink: dynamicLink)
-                completion(response, nil)
+                await MainActor.run {
+                    completion(response, nil)
+                }
             } catch let error as DynamicLinksSDKError {
-                completion(nil, error.nsError)
+                await MainActor.run {
+                    completion(nil, error.nsError)
+                }
             } catch {
-                completion(nil, error as NSError)
+                await MainActor.run {
+                    completion(nil, error as NSError)
+                }
             }
         }
     }
