@@ -5,9 +5,9 @@
 
 import Foundation
 
-/// API 请求响应基类
+/// API 请求响应基类（后端可能只返回 data，无 code/message）
 internal struct BaseApiResponse<T: Decodable>: Decodable {
-    let code: Int
+    let code: Int?
     let message: String?
     let data: T?
 }
@@ -178,17 +178,23 @@ internal final class ApiService: @unchecked Sendable {
             throw DynamicLinksSDKError.networkError(message: "Empty response", cause: nil)
         }
         
-        let baseResponse = try decoder.decode(BaseApiResponse<R>.self, from: data)
-        
-        guard baseResponse.code == 0 else {
-            throw DynamicLinksSDKError.serverError(message: baseResponse.message ?? "Server error", code: baseResponse.code)
+        // 优先尝试带 code/data 包装
+        if let wrapped = try? decoder.decode(BaseApiResponse<R>.self, from: data) {
+            let status = wrapped.code ?? 0
+            if status != 0 {
+                throw DynamicLinksSDKError.serverError(message: wrapped.message ?? "Server error", code: status)
+            }
+            if let payload = wrapped.data {
+                return payload
+            }
         }
         
-        guard let resultData = baseResponse.data else {
-            throw DynamicLinksSDKError.parseError(message: "Missing data in response", cause: nil)
+        // 兼容后端直接返回 data 对象（无包装）
+        if let direct = try? decoder.decode(R.self, from: data) {
+            return direct
         }
         
-        return resultData
+        throw DynamicLinksSDKError.parseError(message: "Missing data in response", cause: nil)
     }
 }
 
